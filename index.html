@@ -1,76 +1,135 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- link google font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
-    <!-- link de mi css-->
-    <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" href="images/logo-termo-blanco.png">
-    <title>InFusion | Home</title>
+
+<html>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- link google font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+<!-- link Css Bootstrap-->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<!-- link css Sweet Alert-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css">
+<!-- link css Toastify -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<!-- link de css -->
+<link rel="stylesheet" href="style.css">
+<link rel="shortcut icon" href="images/logo-termo-blanco.png">
+<title>InFusion | Productos</title>
 </head>
+
 <body>
     <header>
         <nav>
             <div>
                 <img src="images/logo-header-nobg.png" alt="">
             </div>
-            <ul>
+            <ul class="headerNavUl">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="pages/productos.html">Productos</a></li>
-                <li><a href="pages/nosotros.html">Sobre nosotros</a></li>
-                <li><a href="pages/contacto.html">Contacto</a></li>
+                <li><a href="index.html">Productos</a></li>
+                <li><a href="index.html">Sobre nosotros</a></li>
+                <li><a href="index.html">Contacto</a></li>
             </ul>
-            <div class="nav--div">
-                <div class="nav--div--search">
-                    <img src="images/lupa.png" alt="">
+            <div class="navDivCompra">
+                <div class="navDivSearch">
+                    <button type="button"><img src="images/lupa.png" alt=""></button>
                 </div>
-                <div class="nav--div--carrito">
-                    <img src="images/carrito.png" alt="">
+                <div class="navDivCarrito">
+                    <button  type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"><img src="images/carrito.png" alt=""></button>
                 </div>
+                <article>
+                    <!--------- Modal Bootstrap ------------->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog d-flex justify-content-center">
+                            <div class="modal-content"">
+                                <div class="modal-header">
+                                    <h3>Carrito de compra</h3>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div id="modal_carrito">
+                                    <!-- Aqui se crea contenido con Javascript
+                                    <div class="modalCarritoContenido">
+                                        <div class="modalCarritoDescripcion">
+                                            <div>
+                                                <img src="${producto.img}" alt="${producto.alt}">
+                                            </div>
+                                            <h4>${producto.nombre}</h4>
+                                        </div>
+                                        <div class="modalCarritoDetalle">
+                                            <span>Cantidad: ${producto.cantidad}</span>
+                                            <p>Precio: $ ${producto.precio}</p>
+                                            <div>
+                                                <button id="btnEliminar-${producto.id}"><img src="images/basura.png"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    -->
+                                </div>
+                                <div class="modal-total">
+                                    <h4>Total: $</h4>
+                                    <p id="modalTotal"></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn botonCerrar" data-bs-dismiss="modal" id="btnCerrar">Cerrar</button>
+                                    <button type="button" class="btn botonCerrar" id="btnVaciar">Vaciar carrito</button>
+                                    <button type="button" class="btn botonCompra" id="btnCompra">Finalizar compra</button>
+                                </div>    
+                            </div>
+                        </div>
+                    </div>
+                </article>
             </div>
         </nav>
     </header>
     <main>
-        <section class="home--section--presentacion">
-            <article>
-                <h1>Titulo</h1>
-                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptate saepe alias</p>    
-            </article>
+        <section class="productosSection">
             <div>
-                <img src="" alt="">
+                <h1>Caja de filtros</h1>
+                <p>+ Termos</p>
+                <p>+ Mates</p>
             </div>
-        </section>
-        <section class="home--section--destacados">
-            <div>
-                <img src="" alt="">
-            </div>
-            <article>
-                <h2>Nombre de producto destacado</h2>
-                <p>Detalle de producto</p>
+            <article class="productosArticle" id="contenedor_productos">
+                <!--
+                <div class="productosCardContainer">
+                    <div class="divImg">
+                        <img src="${producto.img}" alt="${producto.alt}">
+                    </div>
+                    <h3>${producto.nombre}</h3>
+                    <p>${producto.descripcion}</p>
+                    <span>$ ${producto.precio}</span>
+                    <button class="botonAnhadir" id="producto-${producto.id}"><p>Añadir al carrito</p></button>
+                </div>
+                -->
             </article>
         </section>
-        <section class="home--section--nosotros">
-            <h2>Sobre nosotros</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto accusantium natus velit quam similique cum facere necessitatibus assumend</p>
-        </section>
-        <section>
-            <h2>Contacto</h2>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ab magni suscipit aut quas labore nihil maxime mollitia sapiente fugiat.</p>
-        </section>
+
     </main>
     <footer>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="pages/productos.html">Productos</a></li>
-            <li><a href="pages/nosotros.html">Sobre nosotros</a></li>
-            <li><a href="pages/contacto.html">Contacto</a></li>
-        </ul>
+        <article>
+            <div>
+                <img src="images/logo-termo-blanco.png" alt="">
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html">Productos</a></li>
+                <li><a href="index.html">Sobre nosotros</a></li>
+                <li><a href="index.html">Contacto</a></li>
+            </ul>
+        </article>
+        <div>
+            <h4>InFusion 2023 - Todos los derechos reservados</h4>
+        </div>
     </footer>
+    <!-- CDN Sweet Alert-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- CDN Toastify-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- CDN Bootstrap-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="main.js"></script>
 </body>
+
 </html>

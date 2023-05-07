@@ -18,7 +18,7 @@ class ProductoController{
     }
 
     async levantarYMostrar(controladorCarrito){
-        const respuesta =  await fetch("../baseDatos/bdProductos.json")
+        const respuesta =  await fetch("baseDatos/bdProductos.json")
         this.listaProductos = await respuesta.json()
 
         this.mostrarEnDOM();
@@ -137,7 +137,7 @@ class CarritoController{
                     <span>Cantidad: ${producto.cantidad}</span>
                     <p>Precio: $ ${producto.precio}</p>
                     <div>
-                        <button id="btnEliminar-${producto.id}"><img src="../images/basura.png"></button>
+                        <button id="btnEliminar-${producto.id}"><img src="images/basura.png"></button>
                     </div>
                 </div>
             </div>
