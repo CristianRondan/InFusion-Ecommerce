@@ -269,7 +269,26 @@ footer div{
 
 .modalCarritoDetalle{
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 1.5rem;
+}
+.modalCarritoDetalle p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.modalCarritoDetalle div button{
+    border: 2px solid #4a8080;
+    border-radius: 0.5rem;
+    background-color: #dcdde9;
+}
+
+.modalCarritoDetalle div button:hover{
+    transform: scale(1.07);
+    border-color: #2577bd;
 }
 
 .modal-total{

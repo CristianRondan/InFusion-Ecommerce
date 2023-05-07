@@ -1,11 +1,12 @@
 class Producto{
-    constructor(id, nombre, precio, img, alt, cantidad, descripcion){
+    constructor(id, nombre, precio, cantidad, img, alt, stock, descripcion){
         this.id = id
         this.nombre = nombre
         this.precio = precio
+        this.cantidad = cantidad
         this.img = img
         this.alt = alt
-        this.cantidad = cantidad
+        this.stock = stock
         this.descripcion = descripcion
     }
 }
@@ -16,17 +17,13 @@ class ProductoController{
         this.contenedor_productos = document.getElementById("contenedor_productos");
     }
 
-    levantarProductos(){
-        this.listaProductos = [
-            new Producto(1, "Termo Stanley Classic 1,4 Lts", 39100, "../images/productos/termos/termo-stanley.png", "imagen termo stanley classic 1,4 litros", 10, "Totalmente a prueba de fugas y capaz de mantener las bebidas calientes durante 40 horas, frías durante 45 horas o con hielo durante 6 días."),
-            new Producto(2, "Mate Stanley 236 ml", 17800, "../images/productos/mates/mate-stanley.png", "imagen mate stanley 236 mililitros", 10, "El mate Stanley mantiene la temperatura durante toda la cebada. Es práctico e higiénico."),
-            new Producto(3, "Termo Thermos 1,2 Lts", 27000, "../images/productos/termos/termo-thermos.png", "imagen termo thermos 1,2 litros", 10, "Para que no te preocupes por la temperatura del agua para el mate te presentamos este termo de acero el cual mantiene tanto el calor como el frió durante 24hs."),
-            new Producto(4, "Termo Waterdog Ombú 1 Lt", 15900, "../images/productos/termos/termo-waterdog.png", "termo waterdog ombú 1 litro", 10, "Acero 100% inoxidable, doble pared de aislamiento, recubrimiento powder coated, fácil de llenar, gracias a su boca ancha."),
-            new Producto(5, "Mate Waterdog Inox Zoilo 240 Cc", 7600, "../images/productos/mates/mate-waterdog.png", "imagen mate waterdog inox zoilo 240 centimetros cúbicos", 10, "100% Acero Inoxidable AISI 304 / 304, doble pared aislante con superficie antideslizante, recubrimiento Powder Coated."),
-            new Producto(6, "Termo Journey 1,3 Lts", 16400, "../images/productos/termos/termo-journey.png", "imagen termo journey 1,3 litros", 10, "Realizado con doble capa de Acero Inoxidable 304, manteniendo la temperatura en el interior del termo sin trasladarla a la capa exterior. Al ser de acero su peso es muy liviano aun estando cargado al máximo."),
-            new Producto(7, "Mate Journey 236 Ml", 6900, "../images/productos/mates/mate-journey.png", "imagen mate journey 236 mililitros", 10, "Es ultraliviano, aún cargado su peso es cómodo para llevarlo con una mano y no se calienta por fuera gracias a su doble capa."),
-            new Producto(8, "Termo Lumilagro 1 Lt", 18200, "../images/productos/termos/termo-lumilagro.png", "imagen termo lumilagro 1 litro", 10, "Termo de acero inoxidable. Capacidad 1000cc. Su doble pared de acero inoxidable y el proceso de vacío exclusivo garantiza una alta performance del producto y asegura el mantenimiento de temperatura por muchas horas. Tapón para mate o café.")        
-        ]
+    async levantarYMostrar(controladorCarrito){
+        const respuesta =  await fetch("../baseDatos/bdProductos.json")
+        this.listaProductos = await respuesta.json()
+
+        this.mostrarEnDOM();
+        this.darEventoCkickAnhadir(controladorCarrito);
+
     }
 
     mostrarEnDOM(){
@@ -45,18 +42,30 @@ class ProductoController{
             </div>
             `
         });
+
+        this.darEventoCkickAnhadir();
     }
 
     darEventoCkickAnhadir(controladorCarrito){
-    //Damos eventos
-    this.listaProductos.forEach(producto => {
-    const btnAnhadir = document.getElementById(`producto-${producto.id}`);
-    btnAnhadir.addEventListener("click", () =>{
-            controladorCarrito.agregar(producto);
-            controladorCarrito.guardarEnStorage();
-            controladorCarrito.mostrarEnModal();
+        this.listaProductos.forEach(producto => {
+            const btnAnhadir = document.getElementById(`producto-${producto.id}`);
+            btnAnhadir.addEventListener("click", () =>{
+                    controladorCarrito.agregar(producto);
+                    controladorCarrito.guardarEnStorage();
+                    controladorCarrito.mostrarEnModal();
+            
+                    Toastify({
+                        text: `${producto.nombre} añadido`,
+                        duration: 3000,
+                        gravity: "bottom", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "#2577bd",
+                        }
+                }).showToast();
+            })
         })
-    })
     }
 }
 
@@ -68,7 +77,22 @@ class CarritoController{
     }
 
     agregar(producto){
-        this.listaCarrito.push(producto);
+        let flag = false;
+
+        for (let i = 0; i < this.listaCarrito.length; i++) {
+            if (this.listaCarrito[i].id == producto.id) {
+                this.listaCarrito[i].cantidad += 1;
+                flag = true;
+            }
+        }
+
+        if (flag == false) {
+            this.listaCarrito.push(producto);            
+        }
+    }
+
+    limpiarCarritoEnStorage(){
+        localStorage.removeItem("listaCarritoKey")
     }
 
     guardarEnStorage(){
@@ -89,6 +113,14 @@ class CarritoController{
         this.contenedor_carrito.innerHTML = ""
     }
 
+    eliminar(producto){
+        let posicion = this.listaCarrito.findIndex(miProducto => producto.id == miProducto.id)
+
+        if (!(posicion == -1)) {
+            this.listaCarrito.splice(posicion,1)
+        }
+    }
+
     mostrarEnModal(){
         this.limpiarContenedor();
         this.listaCarrito.forEach(producto =>{
@@ -102,32 +134,90 @@ class CarritoController{
                     <h4>${producto.nombre}</h4>
                 </div>
                 <div class="modalCarritoDetalle">
-                    <span>Cantidad: 1</span>
+                    <span>Cantidad: ${producto.cantidad}</span>
                     <p>Precio: $ ${producto.precio}</p>
+                    <div>
+                        <button id="btnEliminar-${producto.id}"><img src="../images/basura.png"></button>
+                    </div>
                 </div>
             </div>
             `
         })
+
+        this.listaCarrito.forEach(producto => {
+            const btnEliminarProducto = document.getElementById(`btnEliminar-${producto.id}`)
+
+            btnEliminarProducto.addEventListener("click", () => {
+                this.eliminar(producto);
+                this.guardarEnStorage();
+                this.mostrarEnModal();
+            })
+        })
+
         this.calcularTotal();
     }
 
     calcularTotal(){
-        this.modalTotal.innerHTML = this.listaCarrito.reduce((acc, producto) => acc + producto.precio, 0);
+        this.modalTotal.innerHTML = this.listaCarrito.reduce((acc, producto) => acc + (producto.precio * producto.cantidad), 0);
 
         return this.modalTotal;
     }
 
+    darEventoFinalizarCompra(){
+        const btnCompra = document.getElementById("btnCompra");
+            btnCompra.addEventListener("click", () => {
+                if (this.listaCarrito.length > 0) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Compra finalizada con exito',
+                        showConfirmButton: false,
+                        timer: 1500
+                        })
+                    controladorCarrito.limpiarContenedor();
+                    controladorCarrito.limpiarCarritoEnStorage();
+                    controladorCarrito.listaCarrito = [];
+                    controladorCarrito.calcularTotal();    
+                } else if(this.listaCarrito.length == 0) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'warning',
+                        title: 'No hay productos en el carrito',
+                        showConfirmButton: false,
+                        timer: 1500
+                        })
+                }
+            })
+    }
+
+    darEventoVaciarCarrito(){
+        const btnVaciar = document.getElementById("btnVaciar");
+        btnVaciar.addEventListener("click", () =>{
+            controladorCarrito.limpiarContenedor();
+            controladorCarrito.limpiarCarritoEnStorage();
+            controladorCarrito.listaCarrito = [];
+            controladorCarrito.calcularTotal();   
+            
+            Swal.fire({
+                position: 'center',
+                icon: 'warning',
+                title: 'El carrito fue vaciado',
+                showConfirmButton: false,
+                timer: 1500
+                })
+        })
+    }
 }
 
 const controladorProductos = new ProductoController();
-controladorProductos.levantarProductos();
-
 const controladorCarrito = new CarritoController();
+
+controladorProductos.levantarYMostrar(controladorCarrito);
 
 //Verificar si existen productos en el Storage
 controladorCarrito.levantarDeStorageSiExiste();
-//Mostrar en DOM los productos
-controladorProductos.mostrarEnDOM();
+
 //Eventos
-controladorProductos.darEventoCkickAnhadir(controladorCarrito);
+controladorCarrito.darEventoFinalizarCompra();
+controladorCarrito.darEventoVaciarCarrito();
 
